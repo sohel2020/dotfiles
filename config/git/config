@@ -180,3 +180,6 @@
 [rebase]
     instructionFormat = "[%an - %ar] %s"
     autoStash = true
+[user]
+	email = sohel2020@gmail.com
+	name = Tarikur Rahaman
