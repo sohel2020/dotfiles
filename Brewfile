@@ -52,4 +52,5 @@ brew 'tree'                            # pretty-print directory contents
 brew 'wdiff'                           # word differences in text files
 brew 'wget'                            # internet file retriever
 brew 'zoxide'                          # switch between most used directories
-brew 'sesh' # terminal session manager
+brew 'sesh'                            # terminal session manager
+brew 'tpm'                             # tmux plugin manager

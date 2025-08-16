@@ -11,3 +11,4 @@ config/zsh/.zsh_history
 config/zsh/.zcompdump
 config/zsh/.zsh_sessions
 config/ghostty/overrides
+config/tmux/plugins
