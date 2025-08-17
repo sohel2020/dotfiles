@@ -48,7 +48,7 @@ config.font_rules = {
   },
 }
 config.harfbuzz_features = { "calt", "dlig", "clig=1", "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08" }
-config.font_size = 16
+config.font_size = 18
 config.line_height = 1.1
 config.adjust_window_size_when_changing_font_size = false
 

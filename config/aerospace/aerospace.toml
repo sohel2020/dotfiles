@@ -197,7 +197,7 @@ if.app-id = 'com.apple.MobileSMS'
 run = 'move-node-to-workspace C'
 
 [[on-window-detected]]
-if.app-id = 'com.hnc.Discord'
+if.app-id = 'com.hnc.Slack'
 run = 'move-node-to-workspace C'
 
 ## Development
@@ -221,11 +221,11 @@ if.app-id = 'com.apple.Safari'
 run = 'move-node-to-workspace W'
 
 [[on-window-detected]]
-if.app-id = 'company.thebrowser.Browser'
+if.app-id = 'com.microsoft.edgemac'
 run = 'move-node-to-workspace W'
 
 [[on-window-detected]]
-if.app-id = 'app.zen-browser.zen'
+if.app-id = 'com.google.Chrome'
 run = 'move-node-to-workspace W'
 
 # Productivity
