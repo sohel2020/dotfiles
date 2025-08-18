@@ -29,22 +29,22 @@ config.window_padding = {
 }
 
 -- font config
-config.font = wezterm.font("Monaspace Neon", { weight = "Regular" })
+config.font = wezterm.font("JetBrains Mono", { weight = "Regular" })
 config.font_rules = {
   {
     intensity = "Normal",
     italic = true,
-    font = wezterm.font("Monaspace Radon", { weight = "Regular" }),
+    font = wezterm.font("JetBrains Mono", { weight = "Regular" }),
   },
   {
     intensity = "Bold",
     italic = false,
-    font = wezterm.font("Monaspace Neon", { weight = "ExtraBold" }),
+    font = wezterm.font("JetBrainsMono Nerd Font", { weight = "ExtraBold" }),
   },
   {
     intensity = "Bold",
     italic = true,
-    font = wezterm.font("Monaspace Radon", { weight = "ExtraBold" }),
+    font = wezterm.font("JetBrains Mono", { weight = "ExtraBold" }),
   },
 }
 config.harfbuzz_features = { "calt", "dlig", "clig=1", "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08" }

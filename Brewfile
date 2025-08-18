@@ -18,6 +18,7 @@ cask 'nikitabobko/tap/aerospace'     # a tiling window manager
 # Fonts
 cask 'font-symbols-only-nerd-font'   # nerd-only symbols font
 cask 'font-monaspace'                # Preferred monospace font
+cask 'font-jetbrains-mono-nerd-font'
 
 # Latest versions of some core utilities
 brew 'git'                             # Git version control
