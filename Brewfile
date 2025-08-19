@@ -14,6 +14,7 @@ cask 'ghostty'                       # a better terminal emulator
 cask 'wezterm'                       # a better terminal emulator
 cask 'karabiner-elements'            # keyboard customizer
 cask 'nikitabobko/tap/aerospace'     # a tiling window manager
+cask 'obsidian'                      # Note taking applicaiton
 
 # Fonts
 cask 'font-symbols-only-nerd-font'   # nerd-only symbols font
