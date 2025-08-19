@@ -1,8 +1,5 @@
 # vim:ft=ruby
 
-tap 'homebrew/bundle'
-
-
 tap 'FelixKratz/formulae' # For janky borders
 
 # taps
@@ -13,7 +10,8 @@ brew 'borders'                       # add borders to windows
 cask 'ghostty'                       # a better terminal emulator
 cask 'wezterm'                       # a better terminal emulator
 cask 'karabiner-elements'            # keyboard customizer
-cask 'nikitabobko/tap/aerospace'     # a tiling window manager
+cask 'raycast'
+# cask 'nikitabobko/tap/aerospace'     # a tiling window manager
 cask 'obsidian'                      # Note taking applicaiton
 
 # Fonts
@@ -56,3 +54,26 @@ brew 'wget'                            # internet file retriever
 brew 'zoxide'                          # switch between most used directories
 brew 'sesh'                            # terminal session manager
 brew 'tpm'                             # tmux plugin manager
+
+# work related
+
+tap 'derailed/k9s'
+brew 'kubernetes-cli'
+brew 'kubectx'
+brew 'helm'
+brew 'k9s'
+brew 'colima'
+brew 'tfenv'
+brew 'uv'
+brew 'terraform-docs'
+brew 'awscli'
+brew 'docker'
+brew 'docker-compose'
+
+cask 'keepingyouawake'
+cask 'visual-studio-code'
+cask 'spotify'
+cask 'microsoft-edge'
+cask 'whatsapp'
+cask 'slack'
+cask 'openlens'

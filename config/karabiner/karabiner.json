@@ -1,56 +1,65 @@
 {
-  "global": {
-    "check_for_updates_on_startup": true,
-    "show_in_menu_bar": false,
-    "show_profile_name_in_menu_bar": false,
-    "ask_for_confirmation_before_quitting": true
-  },
   "profiles": [
     {
-      "name": "Default profile",
-      "selected": true,
-      "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" },
       "complex_modifications": {
-        "parameters": {
-          "basic.to_if_alone_timeout_milliseconds": 200,
-          "basic.to_if_held_down_threshold_milliseconds": 200
-        },
         "rules": [
           {
-            "description": "Remap Caps Lock to Control if pressed with other keys, to Escape if pressed alone",
             "manipulators": [
               {
-                "type": "basic",
+                "description": "Change caps_lock to command+control+option+shift.",
                 "from": {
                   "key_code": "caps_lock",
-                  "modifiers": { "optional": ["any"] }
-                },
-                "to": [{ "key_code": "left_control" }],
-                "to_if_alone": [{ "key_code": "escape" }],
-                "to_after_key_up": [
-                  { "set_variable": { "name": "caps_lock_state", "value": 0 } }
-                ]
-              }
-            ]
-          },
-          {
-            "description": "Right Option to Hyper Key",
-            "manipulators": [
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "right_option"
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
                 },
                 "to": [
                   {
                     "key_code": "left_shift",
-                    "modifiers": ["left_command", "left_option", "left_control"]
+                    "modifiers": [
+                      "left_command",
+                      "left_control",
+                      "left_option"
+                    ]
                   }
-                ]
+                ],
+                "type": "basic"
               }
             ]
           }
         ]
+      },
+      "devices": [
+        {
+          "identifiers": {
+            "is_keyboard": true,
+            "is_pointing_device": true,
+            "product_id": 45913,
+            "vendor_id": 1133
+          },
+          "ignore": false,
+          "ignore_vendor_events": true,
+          "manipulate_caps_lock_led": false,
+          "simple_modifications": [
+            {
+              "from": {
+                "key_code": "non_us_backslash"
+              },
+              "to": [
+                {
+                  "key_code": "grave_accent_and_tilde"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "name": "Default profile",
+      "selected": true,
+      "virtual_hid_keyboard": {
+        "keyboard_type_v2": "ansi"
       }
     }
   ]

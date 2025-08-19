@@ -1,0 +1,319 @@
+#!/usr/bin/env bash
+# Description: Copy keyboard layout files to ~/Library/Keyboard Layouts
+# Copies all files from ~/.config/unibijoy/ to macOS keyboard layouts directory
+set -Eeuo pipefail
+
+if [[ -f "$DOTFILES/bin/lib/common.sh" ]]; then
+  source "$DOTFILES/bin/lib/common.sh"
+else
+  echo "Error: Unable to source common.sh"
+  exit 1
+fi
+
+SOURCE_DIR="$DOTFILES/config/unibijoy"
+DEST_DIR="$HOME/Library/Keyboard Layouts"
+
+show_help() {
+    echo "Usage: $0"
+    echo ""
+    echo "Description:"
+    echo "  Copies all keyboard layout files from ~/.config/unibijoy/"
+    echo "  to ~/Library/Keyboard Layouts/"
+    echo ""
+    echo "Examples:"
+    echo "  $0"
+    echo ""
+    echo "File Requirements:"
+    echo "  - Source directory: ~/.config/unibijoy/ (must exist)"
+    echo "  - Typically copies .keylayout files"
+    echo "  - Destination: ~/Library/Keyboard Layouts/"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help     Show this help message"
+}
+
+check_source_directory() {
+    if [ ! -d "$SOURCE_DIR" ]; then
+        log_error "Source directory '$SOURCE_DIR' not found."
+        log_info "Please create the directory and add your keyboard layout files."
+        exit 1
+    fi
+    
+    if [ ! -r "$SOURCE_DIR" ]; then
+        log_error "Source directory '$SOURCE_DIR' is not readable."
+        log_info "Please check directory permissions and try again."
+        exit 1
+    fi
+    
+    # Check if directory has any files
+    if [ -z "$(ls -A "$SOURCE_DIR" 2>/dev/null)" ]; then
+        log_warning "Source directory '$SOURCE_DIR' is empty."
+        log_info "No keyboard layout files to copy."
+        exit 0
+    fi
+}
+
+setup_destination() {
+    # Create destination directory if it doesn't exist
+    if [ ! -d "$DEST_DIR" ]; then
+        log_info "Creating destination directory: $DEST_DIR"
+        if ! mkdir -p "$DEST_DIR"; then
+            log_error "Failed to create destination directory: $DEST_DIR"
+            exit 1
+        fi
+    fi
+    
+    # Check if destination is writable
+    if [ ! -w "$DEST_DIR" ]; then
+        log_error "Destination directory '$DEST_DIR' is not writable."
+        log_info "Please check directory permissions."
+        exit 1
+    fi
+}
+
+copy_unibijoys() {
+    # Validate source directory
+    check_source_directory
+    
+    # Setup destination directory
+    setup_destination
+    
+    log_info "Copying keyboard layout files..."
+    log_info "Source: $SOURCE_DIR"
+    log_info "Destination: $DEST_DIR"
+    echo ""
+    
+    local file_count=0
+    local success_count=0
+    local error_count=0
+    
+    # Copy files and track results
+    for file in "$SOURCE_DIR"/*; do
+        if [ -f "$file" ]; then
+            file_count=$((file_count + 1))
+            local filename=$(basename "$file")
+            local dest_file="$DEST_DIR/$filename"
+            
+            log_info "Copying: $filename"
+            
+            if cp "$file" "$dest_file"; then
+                success_count=$((success_count + 1))
+                log_success "✓ Copied: $filename"
+                
+                # Show file info
+                local file_size=$(wc -c < "$file")
+                log_info "  Size: $file_size bytes"
+                
+                # Check if it's a .keylayout file
+                if [[ "$filename" == *.keylayout ]]; then
+                    log_info "  Type: Keyboard Layout"
+                fi
+            else
+                error_count=$((error_count + 1))
+                log_error "✗ Failed to copy: $filename"
+            fi
+        fi
+    done
+    
+    # Show summary
+    echo ""
+    log_info "Copy Summary:"
+    log_info "  Total files found: $file_count"
+    log_success "  Successfully copied: $success_count"
+    
+    if [ $error_count -gt 0 ]; then
+        log_error "  Failed to copy: $error_count"
+        exit 1
+    else
+        log_success "All keyboard layout files copied successfully!"
+        
+        # Show post-installation note
+        if [[ $file_count -gt 0 ]]; then
+            echo ""
+            log_info "Next Steps:"
+            log_info "  1. Go to System Preferences > Keyboard > Input Sources"
+            log_info "  2. Click '+' to add your new keyboard layout(s)"
+            log_info "  3. Test your keyboard layout in the Input Sources menu"
+        fi
+    fi
+}
+
+# Main script logic
+case "${1:-}" in
+    "-h"|"--help"|"help")
+        show_help
+        ;;
+    "")
+        copy_unibijoys
+        ;;
+    *)
+        log_error "Unknown argument: '$1'"
+        echo ""
+        show_help
+        exit 1
+        ;;
+esac
+
+#!/usr/bin/env bash
+# Description: Raycast Configuration Encrypt/Decrypt Script
+# Handles both encryption and decryption of Raycast .rayconfig files
+set -Eeuo pipefail
+
+if [[ -f "$DOTFILES/bin/lib/common.sh" ]]; then
+  source "$DOTFILES/bin/lib/common.sh"
+else
+  echo "Error: Unable to source common.sh"
+  exit 1
+fi
+
+
+CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+check_file_exists() {
+    local file="$1"
+    local operation="$2"
+    
+    # Expand tilde if present
+    file="${file/#\~/$HOME}"
+    
+    if [ ! -f "$file" ]; then
+        log_error "Input file '$file' not found."
+        log_info "Please ensure the file exists and try again."
+        exit 1
+    fi
+    
+    if [ ! -r "$file" ]; then
+        log_error "Input file '$file' is not readable."
+        log_info "Please check file permissions and try again."
+        exit 1
+    fi
+    
+    # Additional validation based on operation
+    case "$operation" in
+        "encrypt")
+            if [[ "$file" != *.json ]]; then
+                log_warning "Input file '$file' doesn't have .json extension."
+                log_info "Proceeding anyway, but ensure it contains valid JSON data."
+            fi
+            ;;
+        "decrypt")
+            if [[ "$file" != *.rayconfig ]]; then
+                log_warning "Input file '$file' doesn't have .rayconfig extension."
+                log_info "Proceeding anyway, but ensure it's a valid encrypted rayconfig file."
+            fi
+            ;;
+    esac
+    
+    echo "$file"  # Return the expanded file path
+}
+
+encrypt_file() {
+    local input_file="${CONFIG_HOME}/raycast/raycast.json"
+    local output_file="${CONFIG_HOME}/raycast/raycast.rayconfig"
+
+    # Check if input file exists and is readable
+    input_file=$(check_file_exists "$input_file" "encrypt")
+
+    # Validate JSON format if jq is available
+    if command -v jq >/dev/null 2>&1; then
+        if ! jq empty "$input_file" 2>/dev/null; then
+            log_error "Input file '$input_file' does not contain valid JSON."
+            exit 1
+        fi
+        log_info "JSON validation passed"
+    else
+        log_warning "jq not found - skipping JSON validation"
+    fi
+
+    # Create a temporary file for the intermediate step
+    local temp_file=$(mktemp)
+
+    log_info "Starting encryption process..."
+    
+    # Step 1: Add 16-byte header and gzip the JSON file
+    printf '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' > "$temp_file"
+    gzip -c "$input_file" >> "$temp_file"
+
+    # Step 2: Encrypt with AES-256-CBC
+    if openssl enc -aes-256-cbc -nosalt -in "$temp_file" -k "$PASSWORD" -out "$output_file"; then
+        log_success "Successfully encrypted '$input_file' to '$output_file'"
+        log_info "Output file size: $(wc -c < "$output_file") bytes"
+    else
+        log_error "Encryption failed"
+        rm -f "$temp_file" "$output_file"
+        exit 1
+    fi
+
+    # Clean up temporary file
+    rm "$temp_file"
+}
+
+decrypt_file() {
+    local input_file="${CONFIG_HOME}/raycast/raycast.rayconfig"
+    local output_file="${CONFIG_HOME}/raycast/raycast.json"
+    
+    # Check if input file exists and is readable
+    input_file=$(check_file_exists "$input_file" "decrypt")
+    
+    # Expand tilde in output path
+    output_file="${output_file/#\~/$HOME}"
+
+    # Create output directory if it doesn't exist
+    mkdir -p "$(dirname "$output_file")"
+    
+    log_info "Starting decryption process..."
+
+    # Decrypt the file
+    if openssl enc -d -aes-256-cbc -nosalt -in "$input_file" -k "$PASSWORD" 2>/dev/null | tail -c +17 | gunzip > "$output_file"; then
+        # Verify the decrypted file is valid JSON if jq is available
+        if command -v jq >/dev/null 2>&1; then
+            if jq empty "$output_file" 2>/dev/null; then
+                log_success "Successfully decrypted '$input_file' to '$output_file'"
+                log_info "Output file size: $(wc -c < "$output_file") bytes"
+                log_info "JSON validation passed"
+            else
+                log_error "Decrypted file is not valid JSON. Decryption may have failed."
+                rm -f "$output_file"
+                exit 1
+            fi
+        else
+            log_success "Successfully decrypted '$input_file' to '$output_file'"
+            log_info "Output file size: $(wc -c < "$output_file") bytes"
+            log_warning "jq not found - skipping JSON validation"
+        fi
+    else
+        log_error "Decryption failed. Check password or file format."
+        rm -f "$output_file"  # Remove empty/failed output file
+        exit 1
+    fi
+}
+
+# Main script logic
+if [ $# -eq 0 ]; then
+    show_help
+    exit 1
+fi
+
+case "$1" in
+    "encrypt")
+        encrypt_file
+        ;;
+    "decrypt")
+        if [ $# -lt 2 ]; then
+            log_error "No input file specified for decryption."
+            echo ""
+            show_help
+            exit 1
+        fi
+        decrypt_file "$2"
+        ;;
+    "-h"|"--help"|"help")
+        show_help
+        ;;
+    *)
+        log_error "Unknown command '$1'"
+        echo ""
+        show_help
+        exit 1
+        ;;
+esac
