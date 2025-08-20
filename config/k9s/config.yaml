@@ -1,0 +1,53 @@
+k9s:
+  # CurrentContext is the active kubeconfig context.
+  currentContext: colima 
+
+  # CurrentCluster is the active Kubernetes cluster.
+  currentCluster: colima
+
+  # CurrentNamespace is the active namespace.
+  currentNamespace: default
+
+  # Indicates whether k9s should load all namespaces or not.
+  allNamespaces: false
+
+  # Refresh rate in seconds
+  refreshRate: 2
+
+  # Number of lines to display in logs
+  logBufferSize: 2000
+
+  # Enable mouse support
+  enableMouse: true
+
+  # K9s UI preferences
+  ui:
+    skin: dark
+    showIcons: true
+    headless: false
+    crumbsless: false
+
+  # Views configuration
+  views:
+    v1/pods:
+      sort: STATUS
+      columns:
+        - NAME
+        - READY
+        - STATUS
+        - RESTARTS
+        - AGE
+
+  # Plugins
+  plugins:
+    logs:
+      shortCut: Shift-L
+      description: "Tail pod logs"
+      scopes:
+        - po
+      command: kubectl
+      args:
+        - logs
+        - -f
+        - $POD
+

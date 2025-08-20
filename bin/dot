@@ -72,7 +72,7 @@ cmd_clean() {
     ".config/git" ".config/karabiner" ".config/kitty"
     ".config/lazygit" ".config/nvim" ".config/ripgrep"
     ".config/tmux" ".config/wezterm" ".config/zsh"
-    ".config/raycast" ".config/karabiner"
+    ".config/raycast" ".config/karabiner" ".config/k9s"
   )
 
   fmt_title_underline "Cleaning up broken legacy symlinks..."
@@ -157,6 +157,7 @@ cmd_backup() {
     ".config/zsh"
     ".config/raycast"
     ".config/karabiner"
+    ".config/k9s"
   )
 
   # Add home directory files to backup
