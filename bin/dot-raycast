@@ -111,7 +111,7 @@ encrypt_file() {
 }
 
 decrypt_file() {
-    local input_file="${CONFIG_HOME}/raycast/raycast.rayconfig"
+    local input_file="$1"
     local output_file="${CONFIG_HOME}/raycast/raycast.json"
     
     # Check if input file exists and is readable
