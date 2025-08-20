@@ -1,6 +1,6 @@
 k9s:
   # CurrentContext is the active kubeconfig context.
-  currentContext: colima 
+  currentContext: colima
 
   # CurrentCluster is the active Kubernetes cluster.
   currentCluster: colima
@@ -22,7 +22,7 @@ k9s:
 
   # K9s UI preferences
   ui:
-    skin: dark
+    skin: catppuccin-mocha-transparent
     showIcons: true
     headless: false
     crumbsless: false
