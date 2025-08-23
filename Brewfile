@@ -55,6 +55,7 @@ brew 'zoxide'                          # switch between most used directories
 brew 'sesh'                            # terminal session manager
 brew 'tpm'                             # tmux plugin manager
 brew 'yt-dlp'                          # youtube-dl fork that works
+brew 'watch'                           # watch commands update
 
 # work related
 
