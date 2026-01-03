@@ -96,3 +96,23 @@ case $1 in
 esac
 }
 
+tm-t() {
+    local session="Tarikur"
+
+    # Check if the session already exists to avoid errors
+    tmux has-session -t $session 2>/dev/null
+
+    if [ $? != 0 ]; then
+        # Create new session, name the first window, and detach (-d)
+        tmux new-session -d -s $session -n 'k9s-1'
+        tmux new-window -t $session:2 -n 'k9s-2'
+        tmux new-window -t $session:3 -n 'Terminal'
+        tmux new-window -t $session:4 -n 'Development'
+
+        # Select the first window as the starting point
+        tmux select-window -t $session:1
+    fi
+
+    # Attach to the session
+    tmux attach-session -t $session
+}

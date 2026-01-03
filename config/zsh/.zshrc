@@ -145,7 +145,7 @@ fi
 colorflag=$(ls --color &>/dev/null && echo "--color" || echo "-G")
 
 # source local and config files
-for file in ~/.zshrc.local ~/.localrc "$ZDOTDIR/.zsh_prompt" "$ZDOTDIR/.zsh_aliases" "$ZDOTDIR/.kubectl_aliases.zsh"; do
+for file in ~/.zshrc.local ~/.localrc "$ZDOTDIR/.zsh_prompt" "$ZDOTDIR/.zsh_aliases"  "$ZDOTDIR/.k3d_cluster" "$ZDOTDIR/.kubectl_aliases.zsh"; do
   [[ -f "$file" ]] && source "$file"
 done
 

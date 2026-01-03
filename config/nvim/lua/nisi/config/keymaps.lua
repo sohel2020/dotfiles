@@ -35,12 +35,6 @@ vim.keymap.set("n", "<C-l>", "<Plug>WinMoveRight", { desc = "Move to right windo
 vim.keymap.set("n", "[q", "<cmd>cprev<cr>zz", { desc = "Previous quickfix item" })
 vim.keymap.set("n", "]q", "<cmd>cnext<cr>zz", { desc = "Next quickfix item" })
 
--- Move lines with simple arrow keys (can be held down)
-vim.keymap.set("n", "<Up>", "<cmd>m .-2<cr>==", { desc = "Move line up" })
-vim.keymap.set("n", "<Down>", "<cmd>m .+1<cr>==", { desc = "Move line down" })
-vim.keymap.set("v", "<Up>", ":m '<-2<cr>gv=gv", { desc = "Move selection up", silent = true })
-vim.keymap.set("v", "<Down>", ":m '>+1<cr>gv=gv", { desc = "Move selection down", silent = true })
-
 -- If you want to keep J/K in visual mode for moving (doesn't conflict there)
 vim.keymap.set("v", "J", ":m '>+1<cr>gv=gv", { desc = "Move selection down", silent = true })
 vim.keymap.set("v", "K", ":m '<-2<cr>gv=gv", { desc = "Move selection up", silent = true })

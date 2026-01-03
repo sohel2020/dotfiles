@@ -64,6 +64,7 @@ result=$(echo "$sessions_input" |
     --preview-window="right:40%:wrap" \
     --bind="ctrl-r:reload(${BASH_SOURCE[0]} --get-sessions \"$inside_tmux_flag\")" \
     --bind="ctrl-d:execute(tmux kill-session -t {1} 2>/dev/null)+reload(${BASH_SOURCE[0]} --get-sessions \"$inside_tmux_flag\")" \
+    --bind="up:up,down:down" \
     --expect="enter" \
     --print-query)
 
@@ -126,4 +127,33 @@ elif [[ -n "$query" ]]; then
       tmux new-session -s "$query"
     fi
   fi
+fi
+
+# Function to create a tmux session with 4 specific windows
+create_terminal_session() {
+  local session_name="Terminal"
+  
+  # Check if session already exists
+  if tmux has-session -t "$session_name" 2>/dev/null; then
+    echo "Session '$session_name' already exists. Attaching to it..."
+    switch_or_attach "$session_name"
+    return
+  fi
+  
+  # Create the session with the first window (k9s-1)
+  tmux new-session -d -s "$session_name" -n "k9s-1"
+  
+  # Create additional windows
+  tmux new-window -t "$session_name" -n "k9s-2"
+  tmux new-window -t "$session_name" -n "Terminal"
+  tmux new-window -t "$session_name" -n "Development"
+  
+  # Switch to or attach to the session
+  switch_or_attach "$session_name"
+}
+
+# Check if the script is called with --create-terminal flag
+if [[ "$1" == "--create-terminal" ]]; then
+  create_terminal_session
+  exit 0
 fi

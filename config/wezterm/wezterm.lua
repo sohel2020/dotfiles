@@ -56,6 +56,20 @@ config.adjust_window_size_when_changing_font_size = false
 config.send_composed_key_when_left_alt_is_pressed = true
 config.send_composed_key_when_right_alt_is_pressed = false
 
+-- keybindings
+config.keys = {
+  {
+    key = "_",
+    mods = "CMD",
+    action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+  },
+    {
+    key = "|",
+    mods = "CMD",
+    action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+  },
+}
+
 if h.is_dark then
   -- local custom = wezterm.color.get_builtin_schemes()["Catppuccin Macchiato"]
   -- -- set a custom, darker background color for Macchiato

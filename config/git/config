@@ -108,6 +108,8 @@
     rg = "!sh -c 'git ls-files --others --exclude-standard | grep $1 | xargs rm' -"
 
     remotes = remote -v
+
+    fe = "!f() { git checkout main && git pull origin main && git checkout -b \"$1\"; }; f"
 [color]
     diff = auto
     status = auto
