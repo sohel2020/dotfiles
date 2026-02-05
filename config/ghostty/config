@@ -1,12 +1,9 @@
 # Theme settings
 # theme = dark:catppuccin-macchiato,light:catppuccin-latte
-theme = dark:tokyonight_night,light:tokyonight-day
+#theme = dark:tokyonight_night,light:tokyonight-day
+theme = "Catppuccin Mocha"
 background-opacity = 0.85
 background-blur-radius = 30
-# background = #1c2021
-# background = #0B1215
-# background-opacity = 0.75
-# background-blur-radius = 40
 bold-is-bright = true
 
 # window settings
@@ -34,9 +31,10 @@ mouse-hide-while-typing = true
 
 # Font settings
 font-family = "Monaspace Neon Regular"
+font-family = "JetBrains Mono"
 font-family-italic = "Monaspace Radon Var Regular Italic"
 font-family-bold-italic = "Monaspace Radon Var Bold Italic"
-font-size = 16
+font-size = 18
 font-feature = +liga
 cursor-style = block
 adjust-underline-position = 4

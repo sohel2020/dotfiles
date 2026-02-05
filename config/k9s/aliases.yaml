@@ -1,9 +1,66 @@
 aliases:
+  # Core Kubernetes
+  p: pods
   dp: deployments
+  ds: daemonsets
+  sts: statefulsets
+  rs: replicasets
   sec: v1/secrets
+  cm: v1/configmaps
   jo: jobs
+  cj: cronjobs
   cr: clusterroles
   crb: clusterrolebindings
   ro: roles
   rb: rolebindings
   np: networkpolicies
+  ing: ingresses
+  svc: services
+  pvc: persistentvolumeclaims
+  pv: persistentvolumes
+  ns: namespaces
+  no: nodes
+  ev: events
+  sa: serviceaccounts
+
+  # Flux2 - Source Controller
+  gr: gitrepositories.source.toolkit.fluxcd.io
+  ociRepo: ocirepositories.source.toolkit.fluxcd.io
+  helmRepo: helmrepositories.source.toolkit.fluxcd.io
+  helmChart: helmcharts.source.toolkit.fluxcd.io
+  bucket: buckets.source.toolkit.fluxcd.io
+
+  # Flux2 - Kustomize Controller
+  ks: kustomizations.kustomize.toolkit.fluxcd.io
+  ku: kustomizations.kustomize.toolkit.fluxcd.io
+
+  # Flux2 - Helm Controller
+  hr: helmreleases.helm.toolkit.fluxcd.io
+
+  # Flux2 - Notification Controller
+  alert: alerts.notification.toolkit.fluxcd.io
+  provider: providers.notification.toolkit.fluxcd.io
+  receiver: receivers.notification.toolkit.fluxcd.io
+
+  # Flux2 - Image Automation
+  imgRepo: imagerepositories.image.toolkit.fluxcd.io
+  imgPol: imagepolicies.image.toolkit.fluxcd.io
+  imgAuto: imageupdateautomations.image.toolkit.fluxcd.io
+
+  # Flux Tofu Controller
+  tf: terraforms.infra.contrib.fluxcd.io
+  tofu: terraforms.infra.contrib.fluxcd.io
+
+  # KubeVela - Core
+  app: applications.core.oam.dev
+  vela: applications.core.oam.dev
+  compDef: componentdefinitions.core.oam.dev
+  traitDef: traitdefinitions.core.oam.dev
+  wfStep: workflowstepdefinitions.core.oam.dev
+  polDef: policydefinitions.core.oam.dev
+  wf: workflows.core.oam.dev
+  rev: applicationrevisions.core.oam.dev
+  rt: resourcetrackers.core.oam.dev
+
+  # Flux summary view (all flux resources)
+  flux: flux

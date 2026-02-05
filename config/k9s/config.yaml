@@ -1,33 +1,18 @@
 k9s:
-  # CurrentContext is the active kubeconfig context.
   currentContext: colima
-
-  # CurrentCluster is the active Kubernetes cluster.
   currentCluster: colima
-
-  # CurrentNamespace is the active namespace.
   currentNamespace: default
-
-  # Indicates whether k9s should load all namespaces or not.
   allNamespaces: false
-
-  # Refresh rate in seconds
   refreshRate: 2
-
-  # Number of lines to display in logs
   logBufferSize: 2000
-
-  # Enable mouse support
   enableMouse: true
 
-  # K9s UI preferences
   ui:
     skin: catppuccin-mocha-transparent
     showIcons: true
     headless: false
     crumbsless: false
 
-  # Views configuration
   views:
     v1/pods:
       sort: STATUS
@@ -38,16 +23,334 @@ k9s:
         - RESTARTS
         - AGE
 
-  # Plugins
+    gitrepositories.source.toolkit.fluxcd.io:
+      sort: AGE
+      columns:
+        - NAMESPACE
+        - NAME
+        - URL
+        - AGE
+        - READY
+        - STATUS
+
+    kustomizations.kustomize.toolkit.fluxcd.io:
+      sort: AGE
+      columns:
+        - NAMESPACE
+        - NAME
+        - AGE
+        - READY
+        - STATUS
+
+    helmreleases.helm.toolkit.fluxcd.io:
+      sort: AGE
+      columns:
+        - NAMESPACE
+        - NAME
+        - AGE
+        - READY
+        - STATUS
+
+    helmrepositories.source.toolkit.fluxcd.io:
+      sort: AGE
+      columns:
+        - NAMESPACE
+        - NAME
+        - URL
+        - AGE
+        - READY
+        - STATUS
+
+    ocirepositories.source.toolkit.fluxcd.io:
+      sort: AGE
+      columns:
+        - NAMESPACE
+        - NAME
+        - URL
+        - AGE
+        - READY
+        - STATUS
+
+    terraforms.infra.contrib.fluxcd.io:
+      sort: AGE
+      columns:
+        - NAMESPACE
+        - NAME
+        - READY
+        - STATUS
+        - AGE
+
+    applications.core.oam.dev:
+      sort: AGE
+      columns:
+        - NAMESPACE
+        - NAME
+        - COMPONENT
+        - TYPE
+        - PHASE
+        - HEALTHY
+        - STATUS
+        - AGE
+
   plugins:
     logs:
       shortCut: Shift-L
-      description: "Tail pod logs"
+      description: Tail pod logs
       scopes:
         - po
       command: kubectl
       args:
         - logs
         - -f
-        - $POD
+        - "$POD"
 
+    flux-reconcile-gr:
+      shortCut: Shift-R
+      description: Flux reconcile
+      scopes:
+        - gitrepositories
+      command: flux
+      background: false
+      args:
+        - reconcile
+        - source
+        - git
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    flux-reconcile-ks:
+      shortCut: Shift-R
+      description: Flux reconcile
+      scopes:
+        - kustomizations
+      command: flux
+      background: false
+      args:
+        - reconcile
+        - kustomization
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+        - --with-source
+
+    flux-reconcile-hr:
+      shortCut: Shift-R
+      description: Flux reconcile
+      scopes:
+        - helmreleases
+      command: flux
+      background: false
+      args:
+        - reconcile
+        - helmrelease
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+        - --with-source
+
+    flux-reconcile-helmrepo:
+      shortCut: Shift-R
+      description: Flux reconcile
+      scopes:
+        - helmrepositories
+      command: flux
+      background: false
+      args:
+        - reconcile
+        - source
+        - helm
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    flux-reconcile-oci:
+      shortCut: Shift-R
+      description: Flux reconcile
+      scopes:
+        - ocirepositories
+      command: flux
+      background: false
+      args:
+        - reconcile
+        - source
+        - oci
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    flux-suspend-ks:
+      shortCut: Shift-S
+      description: Flux suspend
+      scopes:
+        - kustomizations
+      command: flux
+      background: false
+      args:
+        - suspend
+        - kustomization
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    flux-resume-ks:
+      shortCut: Shift-U
+      description: Flux resume
+      scopes:
+        - kustomizations
+      command: flux
+      background: false
+      args:
+        - resume
+        - kustomization
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    flux-suspend-hr:
+      shortCut: Shift-S
+      description: Flux suspend
+      scopes:
+        - helmreleases
+      command: flux
+      background: false
+      args:
+        - suspend
+        - helmrelease
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    flux-resume-hr:
+      shortCut: Shift-U
+      description: Flux resume
+      scopes:
+        - helmreleases
+      command: flux
+      background: false
+      args:
+        - resume
+        - helmrelease
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    flux-trace:
+      shortCut: Shift-T
+      description: Flux trace
+      scopes:
+        - kustomizations
+        - helmreleases
+        - gitrepositories
+      command: sh
+      background: false
+      args:
+        - -c
+        - "flux trace $NAME -n $NAMESPACE --kind $RESOURCE_NAME | less"
+
+    tofu-show-plan:
+      shortCut: Shift-P
+      description: Show TF plan
+      scopes:
+        - terraforms
+      command: sh
+      background: false
+      args:
+        - -c
+        - "tfctl show plan $NAME -n $NAMESPACE 2>/dev/null || kubectl -n $NAMESPACE describe terraform $NAME | less"
+
+    tofu-approve:
+      shortCut: Shift-A
+      description: Approve TF plan
+      scopes:
+        - terraforms
+      command: tfctl
+      background: false
+      args:
+        - approve
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    tofu-unlock:
+      shortCut: Ctrl-U
+      description: Force unlock
+      scopes:
+        - terraforms
+      command: tfctl
+      background: false
+      args:
+        - force-unlock
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    tofu-reconcile:
+      shortCut: Shift-R
+      description: Reconcile TF
+      scopes:
+        - terraforms
+      command: tfctl
+      background: false
+      args:
+        - reconcile
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    tofu-replan:
+      shortCut: Ctrl-P
+      description: Replan TF
+      scopes:
+        - terraforms
+      command: tfctl
+      background: false
+      args:
+        - replan
+        - "$NAME"
+        - -n
+        - "$NAMESPACE"
+
+    vela-status:
+      shortCut: Shift-V
+      description: Vela status
+      scopes:
+        - applications
+      command: sh
+      background: false
+      args:
+        - -c
+        - "vela status $NAME -n $NAMESPACE | less"
+
+    vela-top:
+      shortCut: Shift-T
+      description: Vela topology
+      scopes:
+        - applications
+      command: sh
+      background: false
+      args:
+        - -c
+        - "vela status $NAME -n $NAMESPACE --tree | less"
+
+    vela-show:
+      shortCut: Shift-D
+      description: Vela details
+      scopes:
+        - applications
+      command: sh
+      background: false
+      args:
+        - -c
+        - "vela status $NAME -n $NAMESPACE --detail | less"
+
+    vela-revisions:
+      shortCut: Ctrl-R
+      description: Vela revisions
+      scopes:
+        - applications
+      command: sh
+      background: false
+      args:
+        - -c
+        - "vela revision list $NAME -n $NAMESPACE | less"

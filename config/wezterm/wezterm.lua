@@ -5,7 +5,7 @@ local assets = wezterm.config_dir .. "/assets"
 local config = wezterm.config_builder()
 
 -- set this to true to enable fancy background
-local fancy = true
+local fancy = false
 
 config.max_fps = 120
 config.prefer_egl = true
@@ -63,10 +63,22 @@ config.keys = {
     mods = "CMD",
     action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
   },
-    {
+  {
     key = "|",
     mods = "CMD",
     action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+  },
+  -- Cmd+C: Copy selection to clipboard
+  {
+    key = "c",
+    mods = "CMD",
+    action = wezterm.action.CopyTo("Clipboard"),
+  },
+  -- Cmd+V: Paste from clipboard
+  {
+    key = "v",
+    mods = "CMD",
+    action = wezterm.action.PasteFrom("Clipboard"),
   },
 }
 
