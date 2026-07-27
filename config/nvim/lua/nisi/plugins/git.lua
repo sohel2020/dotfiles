@@ -1,3 +1,96 @@
+-- Run a shell command, return ok (bool) + output (string)
+local function git(cmd)
+  local out = vim.fn.system(cmd)
+  return vim.v.shell_error == 0, out
+end
+
+-- Detect the default branch (main vs master) via origin/HEAD, with fallback
+local function detect_main()
+  local ref = vim.trim(vim.fn.system("git symbolic-ref --quiet --short refs/remotes/origin/HEAD"))
+  if vim.v.shell_error == 0 and ref ~= "" then
+    return (ref:gsub("^origin/", ""))
+  end
+  for _, b in ipairs({ "main", "master" }) do
+    git("git rev-parse --verify " .. b)
+    if vim.v.shell_error == 0 then
+      return b
+    end
+  end
+  return nil
+end
+
+local function is_dirty()
+  return vim.trim(vim.fn.system("git status --porcelain")) ~= ""
+end
+
+-- New branch off main, pulling main first. Aborts on a dirty tree.
+local function new_branch_from_main()
+  if is_dirty() then
+    vim.notify("Working tree dirty. Commit or stash first.", vim.log.levels.WARN)
+    return
+  end
+  local main = detect_main()
+  if not main then
+    vim.notify("Could not detect main/master branch.", vim.log.levels.ERROR)
+    return
+  end
+  vim.ui.input({ prompt = "New branch (from " .. main .. "): " }, function(name)
+    if not name or name == "" then
+      return
+    end
+    local steps = {
+      { "git checkout " .. main, "checkout " .. main },
+      { "git pull --ff-only", "pull " .. main },
+      { "git checkout -b " .. vim.fn.shellescape(name), "create " .. name },
+    }
+    for _, step in ipairs(steps) do
+      local ok, out = git(step[1])
+      if not ok then
+        vim.notify("Failed: " .. step[2] .. "\n" .. out, vim.log.levels.ERROR)
+        return
+      end
+    end
+    vim.notify("On new branch " .. name .. " (from " .. main .. ")")
+  end)
+end
+
+-- Sync the current branch: stage all, commit, pull --rebase, push.
+local function sync()
+  vim.ui.input({ prompt = "Commit message: " }, function(msg)
+    if not msg or msg == "" then
+      return
+    end
+    local ok, out = git("git add -A")
+    if not ok then
+      vim.notify("add failed\n" .. out, vim.log.levels.ERROR)
+      return
+    end
+    ok, out = git("git commit -m " .. vim.fn.shellescape(msg))
+    if not ok and not out:match("nothing to commit") then
+      vim.notify("commit failed\n" .. out, vim.log.levels.ERROR)
+      return
+    end
+    -- No upstream yet? Skip pull (nothing to rebase onto) and push with -u.
+    git("git rev-parse --abbrev-ref --symbolic-full-name @{u}")
+    local has_upstream = vim.v.shell_error == 0
+    if has_upstream then
+      ok, out = git("git pull --rebase")
+      if not ok then
+        vim.notify("pull --rebase failed, resolve conflicts\n" .. out, vim.log.levels.ERROR)
+        return
+      end
+      ok, out = git("git push")
+    else
+      ok, out = git("git push -u origin HEAD")
+    end
+    if not ok then
+      vim.notify("push failed\n" .. out, vim.log.levels.ERROR)
+      return
+    end
+    vim.notify("Synced: commit, pull --rebase, push")
+  end)
+end
+
 return {
   {
     "tpope/vim-fugitive",
@@ -7,6 +100,8 @@ return {
       { "<leader>gb", "<cmd>G blame<cr>", desc = "Git blame" },
       { "<leader>gC", "<cmd>G commit<cr>", desc = "Git Commit" },
       { "<leader>gp", "<cmd>G pull<cr>", desc = "Git Pull" },
+      { "<leader>gN", new_branch_from_main, desc = "New branch from main (pull first)" },
+      { "<leader>gS", sync, desc = "Sync (commit + pull --rebase + push)" },
       {
         "<leader>gP",
         function()
