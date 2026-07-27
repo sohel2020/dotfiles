@@ -1,9 +1,9 @@
 local lsp_utils = require("nisi.plugins.lsp.utils")
 local make_conf = lsp_utils.make_conf
-local lspconfig = require("lspconfig")
 local mason = require("mason")
 local mason_lspconfig = require("mason-lspconfig")
 local utils = require("nisi.utils")
+local lspconfig_util = require("lspconfig.util")
 local fn = utils.fn
 local border = "rounded"
 local servers = {
@@ -22,6 +22,11 @@ local servers = {
 }
 
 local M = {}
+
+local function configure_server(server_name, opts)
+  vim.lsp.config(server_name, opts)
+  vim.lsp.enable(server_name)
+end
 
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -45,12 +50,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("v", "ga", vim.lsp.buf.code_action, "Show LSP code actions")
     map("n", "<RightMouse>", "<cmd>:popup mousemenu<cr>", "Show context menu")
 
-    if vim.lsp.inlay_hint then
-      map("n", "<Leader>hh", function()
-        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-      end, "Toggle inlay [h]ints")
-    end
-
     map("n", "<C-x><C-x>", vim.lsp.buf.signature_help, "Show signature help")
 
     -- set up mousemenu options for lsp
@@ -62,10 +61,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 function M.setup()
   -- Set diagnostic keymaps globally
-  vim.keymap.set("n", "<leader>aa", lsp_utils.lsp_show_diagnostics, { desc = "Show diagnostics" })
+  vim.keymap.set("n", "<leader>xd", lsp_utils.lsp_show_diagnostics, { desc = "Show diagnostics" })
   vim.keymap.set("n", "[d", fn(vim.diagnostic.jump, { count = -1 }), { desc = "Go to previous diagnostic" })
   vim.keymap.set("n", "]d", fn(vim.diagnostic.jump, { count = 1 }), { desc = "Go to next diagnostic" })
-  vim.keymap.set("n", "<leader>aq", vim.diagnostic.setloclist, { desc = "Send diagnostics to loclist" })
+  vim.keymap.set("n", "<leader>xq", vim.diagnostic.setloclist, { desc = "Send diagnostics to loclist" })
 
   mason.setup({ ui = { border = border } })
 
@@ -77,14 +76,14 @@ function M.setup()
 
   local handlers = {
     function(server_name)
-      lspconfig[server_name].setup(make_conf({}))
+      configure_server(server_name, make_conf({}))
     end,
   }
 
   if utils.exists_in_table(servers, "eslint_d") then
     handlers["eslint"] = function()
-      lspconfig.eslint.setup({
-        root_dir = require("lspconfig/util").root_pattern(
+      configure_server("eslint", {
+        root_dir = lspconfig_util.root_pattern(
           "eslint.config.js",
           "eslint.config.mjs",
           ".eslintrc.js",
@@ -97,8 +96,8 @@ function M.setup()
 
   if utils.exists_in_table(servers, "tailwindcss") then
     handlers["tailwindcss"] = function()
-      lspconfig.tailwindcss.setup(make_conf({
-        root_dir = require("lspconfig/util").root_pattern(
+      configure_server("tailwindcss", make_conf({
+        root_dir = lspconfig_util.root_pattern(
           "tailwind.config.js",
           "tailwind.config.ts",
           "tailwind.config.cjs"
@@ -144,7 +143,7 @@ function M.setup()
 
   if utils.exists_in_table(servers, "pylsp") then
     handlers["pylsp"] = function()
-      lspconfig.pylsp.setup(make_conf({
+      configure_server("pylsp", make_conf({
         settings = {
           pylsp = {
             plugins = {
@@ -173,7 +172,7 @@ function M.setup()
 
   if utils.exists_in_table(servers, "ts_ls") then
     handlers["ts_ls"] = function()
-      lspconfig.ts_ls.setup(make_conf({
+      configure_server("ts_ls", make_conf({
         handlers = {
           ["textDocument/definition"] = function(err, result, ctx, ...)
             if #result > 1 then
@@ -182,7 +181,7 @@ function M.setup()
             vim.lsp.handlers["textDocument/definition"](err, result, ctx, ...)
           end,
         },
-        root_dir = require("lspconfig/util").root_pattern("tsconfig.json"),
+        root_dir = lspconfig_util.root_pattern("tsconfig.json"),
         settings = {
           typescript = {
             inlayHints = {
@@ -215,7 +214,7 @@ function M.setup()
 
   if utils.exists_in_table(servers, "jsonls") then
     handlers["jsonls"] = function()
-      lspconfig.jsonls.setup(make_conf({
+      configure_server("jsonls", make_conf({
         cmd = { "vscode-json-language-server", "--stdio" },
         filetypes = { "json", "jsonc" },
         settings = {
@@ -274,7 +273,7 @@ function M.setup()
 
   if utils.exists_in_table(servers, "denols") then
     handlers["denols"] = function()
-      lspconfig.denols.setup(make_conf({
+      configure_server("denols", make_conf({
         handlers = {
           ["textDocument/definition"] = function(err, result, ctx, ...)
             vim.notify("Using new definition handler")
@@ -284,7 +283,7 @@ function M.setup()
             vim.lsp.handlers["textDocument/definition"](err, result, ctx, ...)
           end,
         },
-        root_dir = require("lspconfig/util").root_pattern("deno.json", "deno.jsonc"),
+        root_dir = lspconfig_util.root_pattern("deno.json", "deno.jsonc"),
         init_options = { lint = true },
       }))
     end
@@ -292,7 +291,7 @@ function M.setup()
 
   if utils.exists_in_table(servers, "lua_ls") then
     handlers["lua_ls"] = function()
-      lspconfig.lua_ls.setup(make_conf({
+      configure_server("lua_ls", make_conf({
         settings = {
           Lua = {
             runtime = {
@@ -321,18 +320,18 @@ function M.setup()
 
   if utils.exists_in_table(servers, "intelephense") then
     handlers["intelephense"] = function()
-      lspconfig.intelephense.setup(make_conf({
+      configure_server("intelephense", make_conf({
         cmd = { "intelephense", "--stdio" },
         filetypes = { "php" },
         single_file_support = true,
-        root_dir = require("lspconfig/util").root_pattern("composer.json", ".git"),
+        root_dir = lspconfig_util.root_pattern("composer.json", ".git"),
       }))
     end
   end
 
   if utils.exists_in_table(servers, "vimls") then
     handlers["vimls"] = function()
-      lspconfig.vimls.setup(make_conf({
+      configure_server("vimls", make_conf({
         init_options = { isNeovim = true },
       }))
     end
@@ -340,7 +339,7 @@ function M.setup()
 
   if utils.exists_in_table(servers, "diagnosticls") then
     handlers["diagnosticls"] = function()
-      lspconfig.diagnosticls.setup(make_conf({
+      configure_server("diagnosticls", make_conf({
         settings = {
           filetypes = { "sh" },
           init_options = {

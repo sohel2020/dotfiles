@@ -45,6 +45,7 @@ return {
         "comment",
         "cpp",
         "css",
+        "cue",
         "diff",
         "git_rebase",
         "gitcommit",

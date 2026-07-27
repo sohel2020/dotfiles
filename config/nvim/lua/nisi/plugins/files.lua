@@ -2,6 +2,23 @@ local icons = require("nisi.assets").icons
 
 return {
   {
+    -- Floating terminal file manager
+    "mikavilpas/yazi.nvim",
+    version = "*",
+    event = "VeryLazy",
+    cond = not vim.g.vscode,
+    keys = {
+      { "<leader>e", "<cmd>Yazi<cr>", desc = "Open Yazi at current file", mode = { "n", "v" } },
+      { "<leader>E", "<cmd>Yazi cwd<cr>", desc = "Open Yazi in cwd" },
+    },
+    opts = {
+      open_for_directories = false,
+      keymaps = {
+        show_help = "<f1>",
+      },
+    },
+  },
+  {
     -- Edit the filesystem in a buffer
     "stevearc/oil.nvim",
     keys = {
@@ -259,22 +276,47 @@ return {
           desc = "Find sing live raw grep",
         },
         { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Find in buffers" },
-        { "<leader>r", "<cmd>Telescope buffers<cr>", desc = "Find in buffers" },
         { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Find in help" },
+        {
+          "<leader>fc",
+          function()
+            vim.ui.input({ prompt = "New file: ", completion = "file" }, function(name)
+              if name and name ~= "" then
+                vim.cmd("edit " .. vim.fn.fnameescape(name))
+                vim.cmd("write")
+              end
+            end)
+          end,
+          desc = "Create File",
+        },
+        {
+          "<leader>fd",
+          function()
+            local file = vim.fn.expand("%:p")
+            if file == "" then
+              vim.notify("No file in current buffer", vim.log.levels.WARN)
+              return
+            end
+            if vim.fn.confirm("Delete " .. file .. "?", "&Yes\n&No", 2) == 1 then
+              vim.fn.delete(file)
+              vim.cmd("bdelete!")
+              vim.notify("Deleted " .. file)
+            end
+          end,
+          desc = "Delete File",
+        },
       }
       local utils = require("nisi.utils")
 
       if utils.is_in_git_repo() then
         utils.table_append(keys, {
           { "<leader>fs", "<cmd>Telescope git_files<cr>", desc = "Find Git files" },
-          { "<leader>t", "<cmd>Telescope git_files<cr>", desc = "Find in Git files" },
           { "<D-p>", "<cmd>Telescope git_files<cr>", desc = "Find in Git files" },
           { "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Commits" },
           { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Status" },
         })
       else
         utils.table_append(keys, {
-          { "<leader>t", "<cmd>Telescope find_files<cr>", desc = "Find in files" },
           { "<D-p>", "<cmd>Telescope find_files<cr>", desc = "Find in files" },
         })
       end
@@ -343,5 +385,33 @@ return {
         pickers = { find_files = { find_command = { "fd", "--type", "f", "--hidden", "--strip-cwd-prefix" } } },
       }
     end,
+  },
+  {
+    -- Project management: detect roots, switch between recent projects
+    "ahmedkhalf/project.nvim",
+    cond = not vim.g.vscode,
+    event = "VeryLazy",
+    config = function()
+      require("project_nvim").setup({
+        detection_methods = { "pattern" },
+        patterns = { ".git", "package.json", "Cargo.toml", "go.mod", "pyproject.toml", "Makefile" },
+      })
+      pcall(require("telescope").load_extension, "projects")
+    end,
+    keys = {
+      { "<leader>pp", "<cmd>Telescope projects<cr>", desc = "Open Recent Project" },
+      {
+        "<leader>pn",
+        function()
+          vim.ui.input({ prompt = "Open project dir: ", completion = "dir" }, function(dir)
+            if dir and dir ~= "" then
+              vim.cmd("tcd " .. vim.fn.fnameescape(vim.fn.expand(dir)))
+              require("telescope.builtin").find_files()
+            end
+          end)
+        end,
+        desc = "Open New Project",
+      },
+    },
   },
 }

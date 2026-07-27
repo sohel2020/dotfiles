@@ -4,7 +4,29 @@ return {
     lazy = false,
     keys = {
       { "<leader>gr", "<cmd>Gread<cr>", desc = "Read file from git" },
-      { "<leader>gb", "<cmd>G blame<cr>", desc = "Read file from git" },
+      { "<leader>gb", "<cmd>G blame<cr>", desc = "Git blame" },
+      { "<leader>gC", "<cmd>G commit<cr>", desc = "Git Commit" },
+      { "<leader>gp", "<cmd>G pull<cr>", desc = "Git Pull" },
+      {
+        "<leader>gP",
+        function()
+          if vim.fn.confirm("git push?", "&Yes\n&No", 2) == 1 then
+            vim.cmd("G push")
+          end
+        end,
+        desc = "Git Push",
+      },
+      {
+        "<leader>gn",
+        function()
+          vim.ui.input({ prompt = "New branch: " }, function(name)
+            if name and name ~= "" then
+              vim.cmd("G checkout -b " .. name)
+            end
+          end)
+        end,
+        desc = "New Branch",
+      },
     },
     dependencies = { "tpope/vim-rhubarb" },
   },
@@ -55,12 +77,12 @@ return {
         map("n", "<leader>hb", function()
           gitsigns.blame_line({ full = true })
         end, { desc = "Blame line" })
-        map("n", "<leader>tb", gitsigns.toggle_current_line_blame, { desc = "Toggle current line blame" })
+        map("n", "<leader>uB", gitsigns.toggle_current_line_blame, { desc = "Toggle current line blame" })
         map("n", "<leader>hd", gitsigns.diffthis, { desc = "Diff this" })
         map("n", "<leader>hD", function()
           gitsigns.diffthis("~")
         end, { desc = "Diff this file" })
-        map("n", "<leader>td", gitsigns.toggle_deleted, { desc = "Toggle deleted" })
+        map("n", "<leader>uX", gitsigns.toggle_deleted, { desc = "Toggle deleted" })
 
         -- Text object
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })

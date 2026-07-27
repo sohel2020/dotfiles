@@ -22,14 +22,14 @@ return {
     opts = {},
     keys = {
       {
-        "<leader>pe",
+        "<leader>Pe",
         function()
           require("swenv.api").pick_venv()
         end,
         desc = "Pick virtual environment",
       },
       {
-        "<leader>pc",
+        "<leader>Pc",
         function()
           require("swenv.api").get_current_venv()
         end,
@@ -85,7 +85,7 @@ return {
     end,
     keys = {
       {
-        "<leader>sr",
+        "<leader>rr",
         function()
           require("sniprun").run()
         end,
@@ -93,7 +93,7 @@ return {
         mode = { "n", "v" },
       },
       {
-        "<leader>sc",
+        "<leader>rc",
         function()
           require("sniprun").clear()
         end,

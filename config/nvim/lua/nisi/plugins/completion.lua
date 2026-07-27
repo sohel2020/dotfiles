@@ -19,8 +19,30 @@ return {
         preset = "none", -- Use 'none' to have full control
         ["<C-j>"] = { "select_next" },
         ["<C-k>"] = { "select_prev" },
-        ["<CR>"] = { "accept", "fallback" }, -- Accept completion like Tab
-        ["<Tab>"] = { "accept", "fallback" }, -- Use Tab to accept
+        ["<CR>"] = {
+          -- Accept an inline Copilot suggestion first, else the menu item, else newline
+          function()
+            local ok, sug = pcall(require, "copilot.suggestion")
+            if ok and sug.is_visible() then
+              sug.accept()
+              return true
+            end
+          end,
+          "accept",
+          "fallback",
+        },
+        ["<Tab>"] = {
+          -- Accept an inline Copilot suggestion first, else the menu item, else tab
+          function()
+            local ok, sug = pcall(require, "copilot.suggestion")
+            if ok and sug.is_visible() then
+              sug.accept()
+              return true
+            end
+          end,
+          "accept",
+          "fallback",
+        },
         ["<C-y>"] = { "select_and_accept" },
         ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
         ["<Esc>"] = {

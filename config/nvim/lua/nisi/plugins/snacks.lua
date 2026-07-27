@@ -43,21 +43,21 @@ return {
         desc = "Toggle Zoom",
       },
       {
-        "<leader>/",
+        "<leader>bs",
         function()
           Snacks.scratch()
         end,
         desc = "Toggle Scratch Buffer",
       },
       {
-        "<leader>S",
+        "<leader>bS",
         function()
           Snacks.scratch.select()
         end,
         desc = "Select Scratch Buffer",
       },
       {
-        "<leader>n",
+        "<leader>uN",
         function()
           Snacks.notifier.show_history()
         end,
@@ -71,7 +71,7 @@ return {
         desc = "Delete Buffer",
       },
       {
-        "<leader>cR",
+        "<leader>fR",
         function()
           Snacks.rename.rename_file()
         end,
@@ -115,6 +115,13 @@ return {
       },
       {
         "<c-/>",
+        function()
+          Snacks.terminal()
+        end,
+        desc = "Toggle Terminal",
+      },
+      {
+        "<leader>tt",
         function()
           Snacks.terminal()
         end,

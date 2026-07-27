@@ -7,15 +7,14 @@ return {
     event = "InsertEnter",
     opts = {
       suggestion = {
-        enabled = false,
+        enabled = true,
         auto_trigger = true,
         keymap = {
-          accept = "<Tab>",
+          accept = "<C-l>",
           close = "<Esc>",
-          next = "<C-J>",
-          prev = "<C-K>",
-          select = "<CR>",
-          dismiss = "<C-X>",
+          next = "<M-]>",
+          prev = "<M-[>",
+          dismiss = "<C-x>",
         },
       },
       panel = {

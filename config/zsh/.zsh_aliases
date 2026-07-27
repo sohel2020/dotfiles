@@ -64,3 +64,6 @@ if [[ -n "$(command -v nvim)" ]]; then
     # immediately open to fugitive's status screen
     alias vimg="nvim +Ge:"
 fi
+
+# flux9s aliases
+alias f9s="flux9s"

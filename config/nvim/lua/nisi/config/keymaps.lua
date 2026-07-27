@@ -11,9 +11,17 @@ vim.keymap.set({ "n", "i", "v" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save Fil
 vim.keymap.set({ "n", "i", "v" }, "<D-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
 
 vim.keymap.set("n", "<space>", "<cmd>silent set hlsearch! hlsearch?<cr>", { desc = "Toggle search results" })
-vim.keymap.set("n", "<leader>l", "<cmd>set list!<cr>", { desc = "Toggle invisible characters" })
+vim.keymap.set("n", "<leader>ui", "<cmd>set list!<cr>", { desc = "Toggle invisible characters" })
 vim.keymap.set("n", "<leader>.", "<c-^>", { desc = "Go to last buffer" })
-vim.keymap.set("n", "<leader>z", "<Plug>Zoom", { desc = "Toggle zoom", remap = true })
+
+-- comment toggle (builtin gc/gcc)
+vim.keymap.set("n", "<leader>/", "gcc", { desc = "Toggle comment", remap = true })
+vim.keymap.set("v", "<leader>/", "gc", { desc = "Toggle comment", remap = true })
+
+-- open the keymap cheat sheet
+vim.keymap.set("n", "<leader>?", function()
+  vim.cmd("edit " .. vim.fn.stdpath("config") .. "/CHEATSHEET.md")
+end, { desc = "Open cheat sheet" })
 
 -- helpers for dealing with other people's code
 vim.keymap.set("n", "\\t", "<cmd>set ts=4 sts=4 sw=4 noet<cr>", { desc = "Set tabs" })
@@ -49,7 +57,7 @@ vim.keymap.set("v", "$\\", "<esc>`>o*/<esc>`<O/*<esc>", { desc = "Wrap in C-styl
 vim.keymap.set("v", "$<", "<esc>`>a><esc>`<i<<esc>", { desc = "Wrap in angle brackets" })
 
 -- toggle cursorline
-vim.keymap.set("n", "<leader>i", "<cmd>set cursorline!<cr>", { desc = "Toggle cursor line" })
+vim.keymap.set("n", "<leader>uC", "<cmd>set cursorline!<cr>", { desc = "Toggle cursor line" })
 
 -- scroll the viewport faster
 vim.keymap.set("n", "<C-e>", "3<c-e>", { desc = "Scroll down faster" })

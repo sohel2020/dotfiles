@@ -18,17 +18,106 @@ return {
     event = "VeryLazy",
   },
   {
-    "nvim-pack/nvim-spectre",
+    "greggh/claude-code.nvim",
+    cond = not vim.g.vscode,
+    event = "VeryLazy",
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
+    config = function()
+      require("claude-code").setup({
+        -- Terminal window settings
+        window = {
+          split_ratio = 0.3,
+          position = "botright",
+          enter_insert = true,
+          hide_numbers = true,
+          hide_signcolumn = true,
+          -- Floating window configuration (only applies when position = "float")
+          float = {
+            width = "80%",
+            height = "80%",
+            row = "center",
+            col = "center",
+            relative = "editor",
+            border = "rounded",
+          },
+        },
+        -- File refresh settings
+        refresh = {
+          enable = true,
+          updatetime = 100,
+          timer_interval = 1000,
+          show_notifications = true,
+        },
+        -- Git project settings
+        git = {
+          use_git_root = true,
+        },
+        -- Shell-specific settings
+        shell = {
+          separator = "&&",
+          pushd_cmd = "pushd",
+          popd_cmd = "popd",
+        },
+        -- Command settings
+        command = "claude",
+        -- Command variants
+        command_variants = {
+          -- Conversation management
+          continue = "--continue",
+          resume = "--resume",
+
+          -- Output options
+          verbose = "--verbose",
+        },
+        -- Keymaps
+        keymaps = {
+          toggle = {
+            normal = "<C-,>",
+            terminal = "<C-,>",
+            variants = {
+              continue = "<leader>cC",
+              verbose = "<leader>cV",
+            },
+          },
+          window_navigation = true,
+          scrolling = true,
+        },
+      })
+
+      -- Leader alias for the toggle (discoverable in which-key), keeps <C-,>
+      vim.keymap.set("n", "<leader>cc", "<cmd>ClaudeCode<cr>", { desc = "Toggle Claude" })
+    end,
+  },
+  {
+    "MagicDuck/grug-far.nvim",
     cond = not vim.g.vscode,
-    config = true,
+    cmd = "GrugFar",
+    opts = { headerMaxWidth = 80 },
     keys = {
-      { "<leader>sr", "<cmd>lua require('spectre').open()<cr>", desc = "Open spectre" },
-      { "<leader>sw", "<cmd>lua require('spectre').open_visual({select_word=true})<cr>", desc = "Open spectre" },
-      { "<leader>sp", "<cmd>lua require('spectre').open_file_search()<cr>", desc = "Open spectre" },
-      { "<leader>ss", "<cmd>lua require('spectre').open()<cr>", desc = "Open spectre" },
+      {
+        "<leader>sr",
+        function()
+          require("grug-far").open()
+        end,
+        mode = { "n", "v" },
+        desc = "Search & Replace",
+      },
+      {
+        "<leader>sw",
+        function()
+          require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } })
+        end,
+        desc = "Search & Replace word",
+      },
+      {
+        "<leader>sp",
+        function()
+          require("grug-far").open({ prefills = { paths = vim.fn.expand("%") } })
+        end,
+        desc = "Search & Replace current file",
+      },
     },
   },
   {
@@ -60,9 +149,34 @@ return {
       vim.o.timeoutlen = 300
     end,
     opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
+      spec = {
+        { "<leader>f", group = "find/file" },
+        { "<leader>g", group = "git" },
+        { "<leader>h", group = "git hunks" },
+        { "<leader>c", group = "claude" },
+        { "<leader>x", group = "diagnostics/code" },
+        { "<leader>s", group = "search/replace" },
+        { "<leader>r", group = "run" },
+        { "<leader>u", group = "ui/toggle" },
+        { "<leader>t", group = "terminal" },
+        { "<leader>d", group = "debug" },
+        { "<leader>p", group = "project" },
+        { "<leader>P", group = "python" },
+        { "<leader>b", group = "buffer" },
+        -- Hide interesting-word highlight mappings from the popup
+        { "<leader>0", hidden = true },
+        { "<leader>1", hidden = true },
+        { "<leader>2", hidden = true },
+        { "<leader>3", hidden = true },
+        { "<leader>4", hidden = true },
+        { "<leader>5", hidden = true },
+        { "<leader>6", hidden = true },
+        { "<leader>N", hidden = true },
+        { "<leader>a", hidden = true },
+        { "<leader>A", hidden = true },
+        { "<leader>E", hidden = true },
+        { "<leader>y", hidden = true, mode = "v" },
+      },
     },
   },
   {
