@@ -109,7 +109,7 @@ tm-t() {
         tmux new-window -t $session:3 -n 'Terminal'
         tmux new-window -t $session:4 -n 'Development'
         tmux new-window -t $session:5 -n 'Claude'
-        tmux new-window -t $session:5 -n 'vim'
+        tmux new-window -t $session:5 -n 'Vim'
         # Select the first window as the starting point
         tmux select-window -t $session:1
     fi
