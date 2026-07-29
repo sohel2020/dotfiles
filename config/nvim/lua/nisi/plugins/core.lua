@@ -156,12 +156,9 @@ return {
         { "<leader>c", group = "claude", icon = "🤖" },
         { "<leader>x", group = "diagnostics/code", icon = "🩺" },
         { "<leader>s", group = "search/replace", icon = "🔁" },
-        { "<leader>r", group = "run", icon = "▶️" },
         { "<leader>u", group = "ui/toggle", icon = "🎨" },
         { "<leader>t", group = "terminal", icon = "💻" },
-        { "<leader>d", group = "debug", icon = "🐞" },
         { "<leader>p", group = "project", icon = "📁" },
-        { "<leader>P", group = "python", icon = "🐍" },
         { "<leader>b", group = "buffer", icon = "📄" },
         -- Hide interesting-word highlight mappings from the popup
         { "<leader>0", hidden = true },

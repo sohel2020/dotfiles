@@ -104,13 +104,6 @@ Leader is `,`. Press `,` to see the live which-key menu. Open this file anytime 
 
 Inside the grug-far buffer: edit Search / Replace / Files fields, then `<localleader>r` (default) to apply. `<localleader>?` for help.
 
-## `,r` run (SnipRun)
-
-| Key | Action |
-|-----|--------|
-| `,rr` | Run code snippet |
-| `,rc` | Clear SnipRun |
-
 ## `,u` ui / toggle
 
 | Key | Action |
@@ -140,21 +133,6 @@ Inside the grug-far buffer: edit Search / Replace / Files fields, then `<localle
 | `,bd` | Delete buffer |
 | `,bs` | Scratch buffer |
 | `,bS` | Select scratch buffer |
-
-## `,d` debug (Python DAP)
-
-| Key | Action |
-|-----|--------|
-| `,dt` | Debug test method |
-| `,dc` | Debug test class |
-| `,ds` | Debug selection |
-
-## `,P` python
-
-| Key | Action |
-|-----|--------|
-| `,Pe` | Pick venv |
-| `,Pc` | Show current venv |
 
 ## Comments (builtin `gc`)
 

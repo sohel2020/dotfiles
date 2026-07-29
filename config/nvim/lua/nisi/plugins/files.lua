@@ -168,6 +168,8 @@ return {
           ["?"] = "show_help",
           ["<"] = "prev_source",
           [">"] = "next_source",
+          ["<Tab>"] = "next_source",
+          ["<S-Tab>"] = "prev_source",
         },
       },
       nesting_rules = {
