@@ -350,3 +350,57 @@ plugins:
       - -c
       - >-
         tfctl --context $CONTEXT -n $NAMESPACE approve $NAME | less -K
+  debug-pod:
+    shortCut: Shift-D
+    confirm: false
+    description: Debug (ephemeral netshoot)
+    scopes:
+      - pods
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        kubectl --context $CONTEXT -n $NAMESPACE debug -it $NAME
+        --image=nicolaka/netshoot --profile=restricted -- bash
+  debug-container:
+    shortCut: Shift-D
+    confirm: false
+    description: Debug target container
+    scopes:
+      - containers
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        kubectl --context $CONTEXT -n $NAMESPACE debug -it $POD
+        --image=nicolaka/netshoot --profile=restricted
+        --target=$NAME -- bash
+  debug-copy:
+    shortCut: Shift-C
+    confirm: false
+    description: Debug copy of pod
+    scopes:
+      - pods
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        kubectl --context $CONTEXT -n $NAMESPACE debug -it $NAME
+        --copy-to=$NAME-debug --image=nicolaka/netshoot
+        --profile=restricted --share-processes -- bash
+  debug-node:
+    shortCut: Shift-D
+    confirm: false
+    description: Debug node
+    scopes:
+      - nodes
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        kubectl --context $CONTEXT debug node/$NAME -it
+        --image=nicolaka/netshoot --profile=sysadmin -- bash
