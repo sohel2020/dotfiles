@@ -23,6 +23,45 @@ local function is_dirty()
   return vim.trim(vim.fn.system("git status --porcelain")) ~= ""
 end
 
+-- Nudge neo-tree to re-read the filesystem and git status after a git op,
+-- so the tree reflects commits/checkouts without waiting on its own polling.
+local function refresh_neotree()
+  local ok, mgr = pcall(require, "neo-tree.sources.manager")
+  if ok then
+    pcall(mgr.refresh, "filesystem")
+  end
+  local ok_ev, events = pcall(require, "neo-tree.events")
+  if ok_ev then
+    pcall(events.fire_event, events.GIT_EVENT)
+  end
+end
+
+-- Checkout the default branch and fast-forward pull. Aborts on a dirty tree.
+local function checkout_main()
+  if is_dirty() then
+    vim.notify("Working tree dirty. Commit or stash first.", vim.log.levels.WARN)
+    return
+  end
+  local main = detect_main()
+  if not main then
+    vim.notify("Could not detect main/master branch.", vim.log.levels.ERROR)
+    return
+  end
+  local steps = {
+    { "git checkout " .. main, "checkout " .. main },
+    { "git pull --ff-only", "pull " .. main },
+  }
+  for _, step in ipairs(steps) do
+    local ok, out = git(step[1])
+    if not ok then
+      vim.notify("Failed: " .. step[2] .. "\n" .. out, vim.log.levels.ERROR)
+      return
+    end
+  end
+  refresh_neotree()
+  vim.notify("On " .. main .. ", pulled")
+end
+
 -- New branch off main, pulling main first. Aborts on a dirty tree.
 local function new_branch_from_main()
   if is_dirty() then
@@ -50,6 +89,7 @@ local function new_branch_from_main()
         return
       end
     end
+    refresh_neotree()
     vim.notify("On new branch " .. name .. " (from " .. main .. ")")
   end)
 end
@@ -87,6 +127,7 @@ local function sync()
       vim.notify("push failed\n" .. out, vim.log.levels.ERROR)
       return
     end
+    refresh_neotree()
     vim.notify("Synced: commit, pull --rebase, push")
   end)
 end
@@ -100,6 +141,7 @@ return {
       { "<leader>gb", "<cmd>G blame<cr>", desc = "Git blame" },
       { "<leader>gC", "<cmd>G commit<cr>", desc = "Git Commit" },
       { "<leader>gp", "<cmd>G pull<cr>", desc = "Git Pull" },
+      { "<leader>gm", checkout_main, desc = "Checkout main + pull" },
       { "<leader>gN", new_branch_from_main, desc = "New branch from main (pull first)" },
       { "<leader>gS", sync, desc = "Sync (commit + pull --rebase + push)" },
       {

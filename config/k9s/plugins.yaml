@@ -295,3 +295,58 @@ plugins:
         kustomizations.kustomize.toolkit.fluxcd.io -o json
         | jq -r '.items[] | select(.spec.suspend==true) | [.metadata.name,.spec.suspend] | @tsv'
         | less -K
+  reconcile-terraform:
+    shortCut: Shift-R
+    confirm: false
+    description: Flux reconcile Terraform
+    scopes:
+      - terraforms
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        kubectl --context $CONTEXT -n $NAMESPACE
+        annotate terraform $NAME
+        reconcile.fluxcd.io/requestedAt="$(date +%s)" --overwrite
+        | less -K
+  toggle-terraform:
+    shortCut: Shift-T
+    confirm: true
+    description: Toggle suspend/resume Terraform
+    scopes:
+      - terraforms
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        suspended=$(kubectl --context $CONTEXT get terraform -n $NAMESPACE $NAME -o=custom-columns=T:.spec.suspend | tail -1);
+        verb=$([ "$suspended" = "true" ] && echo false || echo true);
+        kubectl --context $CONTEXT -n $NAMESPACE
+        patch terraform $NAME --type merge -p "{\"spec\":{\"suspend\":$verb}}"
+        | less -K
+  terraform-plan:
+    shortCut: Shift-P
+    confirm: false
+    description: tfctl show plan
+    scopes:
+      - terraforms
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        tfctl --context $CONTEXT -n $NAMESPACE show plan $NAME | less -K
+  terraform-approve:
+    shortCut: Shift-Y
+    confirm: true
+    description: tfctl approve plan
+    scopes:
+      - terraforms
+    command: bash
+    background: false
+    args:
+      - -c
+      - >-
+        tfctl --context $CONTEXT -n $NAMESPACE approve $NAME | less -K
