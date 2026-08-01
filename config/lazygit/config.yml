@@ -459,3 +459,21 @@ keybinding:
     bulkMenu: b
   commitMessage:
     commitMenu: <c-o>
+# AI commit: claude (haiku) reads the staged diff and proposes 3 Conventional
+# Commits messages; pick one in the menu and it commits. Trigger with X in Files.
+customCommands:
+  - key: X
+    context: files
+    description: "AI commit (claude/haiku)"
+    loadingText: "Generating commit messages…"
+    output: log
+    prompts:
+      - type: menuFromCommand
+        title: "Pick a commit message"
+        key: Msg
+        command: >-
+          sh -c 'git --no-pager diff --cached | claude --model haiku -p "Read this staged git diff and output exactly 3 candidate Conventional Commits messages, one per line, best first. Each line: type(scope): subject in imperative mood, max 72 chars. No numbering, no bullets, no blank lines, no quotes, no backticks, no explanation. Only the 3 lines."'
+        filter: '(?P<msg>.+)'
+        valueFormat: '{{ .msg }}'
+        labelFormat: '{{ .msg }}'
+    command: git commit -m "{{.Form.Msg}}"
