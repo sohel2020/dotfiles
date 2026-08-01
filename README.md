@@ -366,3 +366,4 @@ cross-platform. For a full and up-to-date list of the software and gear that I u
 If you have questions, notice issues, or would like to see improvements, please
 open a new [discussion](https://github.com/nicknisi/dotfiles/discussions/new)
 and I'm happy to help you out!
+

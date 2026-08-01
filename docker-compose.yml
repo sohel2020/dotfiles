@@ -8,3 +8,4 @@ services:
       - .:/home/user/code/dotfiles
     stdin_open: true
     tty: true
+
