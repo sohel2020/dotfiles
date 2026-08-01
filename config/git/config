@@ -20,6 +20,11 @@
 
     co = checkout
     s = status --short --branch
+
+    # AI commit: generate a Conventional Commits message from the staged diff
+    # (local model via ~/.config/git/ai-commit.sh) and commit with it directly.
+    # Env: LG_AI_ENDPOINT, LG_AI_MODEL, LG_AI_TIMEOUT.
+    aic = "!f() { msg=$(\"$HOME/.config/git/ai-commit.sh\" ai-defined 1 | head -n1); [ -n \"$msg\" ] || exit 1; git commit -m \"$msg\"; }; f"
     br = branch -v
     addnw = "!sh -c 'git diff -U0 -w --no-color \"$@\" | git apply --cached --ignore-whitespace --unidiff-zero -'"
     cane = commit --amend --no-edit

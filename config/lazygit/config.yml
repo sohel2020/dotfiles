@@ -459,7 +459,7 @@ keybinding:
     bulkMenu: b
   commitMessage:
     commitMenu: <c-o>
-# AI commit: config/lazygit/ai-commit.sh sends the staged diff to a local
+# AI commit: ~/.config/git/ai-commit.sh sends the staged diff to a local
 # OpenAI-compatible model and proposes Conventional Commits messages; pick one
 # in the menu and it commits. Trigger with X. Override endpoint/model via
 # LG_AI_ENDPOINT / LG_AI_MODEL.
@@ -479,6 +479,6 @@ customCommands:
       - type: "menuFromCommand"
         title: "AI Generated Commit Messages"
         key: "CommitMsg"
-        command: bash -c '"$HOME/.config/lazygit/ai-commit.sh" "{{.Form.Type}}"'
+        command: bash -c '"$HOME/.config/git/ai-commit.sh" "{{.Form.Type}}"'
     command: "git commit -m \"{{.Form.CommitMsg}}\""
     loadingText: "Generating commit messages..."
