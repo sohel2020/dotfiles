@@ -63,8 +63,8 @@ tmux set -g message-style "fg=${thm_cyan},bg=${thm_fg_gutter},align=centre"
 tmux set -g message-command-style "fg=${thm_cyan},bg=${thm_fg_gutter},align=centre"
 
 # Pane borders
-tmux set-window-option -g pane-active-border-style "fg=${thm_fg_gutter},bg=${thm_fg_gutter}"
-tmux set-window-option -g pane-border-style "fg=${thm_fg_gutter},bg=${thm_fg_gutter}"
+tmux set-window-option -g pane-active-border-style "fg=${thm_blue}"
+tmux set-window-option -g pane-border-style "fg=${thm_fg_gutter}"
 tmux set-window-option -g pane-border-lines simple
 
 # Window status
