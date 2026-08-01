@@ -459,8 +459,10 @@ keybinding:
     bulkMenu: b
   commitMessage:
     commitMenu: <c-o>
-# AI commit: claude (haiku) reads the staged diff and proposes 3 Conventional
-# Commits messages; pick one in the menu and it commits. Trigger with X in Files.
+# AI commit: config/lazygit/ai-commit.sh sends the staged diff to a local
+# OpenAI-compatible model and proposes Conventional Commits messages; pick one
+# in the menu and it commits. Trigger with X. Override endpoint/model via
+# LG_AI_ENDPOINT / LG_AI_MODEL.
 
 customCommands:
   - key: X
@@ -477,71 +479,6 @@ customCommands:
       - type: "menuFromCommand"
         title: "AI Generated Commit Messages"
         key: "CommitMsg"
-        command: |
-          bash -lc '
-          diff=$(git diff --cached)
-          if [ -z "$diff" ]; then
-            echo "No changes in staging. Add changes first."
-            exit 1
-          fi
-
-          SELECTED_TYPE="{{.Form.Type}}"
-          COMMITS_TO_SUGGEST=2
-
-          PROMPT="
-          You are an expert at writing Git commits. Your job is to write commit messages that follow the Conventional Commits format.
-
-          The user has selected: $SELECTED_TYPE
-
-          Your task is to:
-          1. Analyze the code changes
-          2. Determine the most appropriate commit type if user selected ai-defined
-          3. Determine an appropriate scope, component, or area affected
-          4. Decide if this is a breaking change
-          5. Write clear, concise commit messages
-
-          Available commit types:
-          - feat: A new feature
-          - fix: A bug fix
-          - docs: Documentation only changes
-          - style: Changes that do not affect the meaning of the code
-          - refactor: A code change that neither fixes a bug nor adds a feature
-          - perf: A code change that improves performance
-          - test: Adding missing tests or correcting existing tests
-          - build: Changes that affect the build system or external dependencies
-          - ci: Changes to CI configuration files and scripts
-          - chore: Other changes that do not modify src or test files
-          - revert: Reverts a previous commit
-
-          Follow these guidelines:
-          - Structure: <type>(<scope>): <description>
-          - If user selected ai-defined, analyze the changes and pick the most suitable type
-          - If user selected a specific type, use that type: $SELECTED_TYPE
-          - Add scope in parentheses if applicable, for example auth, api, ui, config
-          - Use exclamation mark after type or scope for breaking changes: type(scope)!: description
-          - Use lowercase for description except proper nouns
-          - Use imperative mood: add, not added
-          - Keep description under 50 characters when possible
-          - No period at the end of subject line
-
-          IMPORTANT:
-          - Generate exactly $COMMITS_TO_SUGGEST different commit message options
-          - If user selected ai-defined, you can use different types for different options
-          - If user selected a specific type, all messages must use that type
-          - Only return commit messages, no explanations
-          - Do not use markdown code blocks
-          - One message per line
-
-          Previous commits for context:
-          $(git log --oneline -10)
-
-          Changes to analyze:
-          $(git diff --cached --stat)
-          $diff
-          "
-
-          PAYLOAD="$(jq -n --arg c "$PROMPT" "{model: \"gemma-4-e4b-it\", messages: [{role: \"user\", content: \$c}], temperature: 0.3}")"
-          curl -s http://127.0.0.1:1234/v1/chat/completions -H "Content-Type: application/json" -d "$PAYLOAD" 2>/dev/null | jq -r ".choices[0].message.content // empty"
-          '
+        command: bash -c '"$HOME/.config/lazygit/ai-commit.sh" "{{.Form.Type}}"'
     command: "git commit -m \"{{.Form.CommitMsg}}\""
     loadingText: "Generating commit messages..."
